@@ -1,0 +1,11 @@
+﻿<div class="text-center" ng-controller="AuthorController">
+    <h1>Author Page</h1>
+    <p>{{msg}}</p>
+</div>
+
+<script>
+    angular.module('MyApp')
+    .controller('AuthorController', function ($scope) {
+        $scope.msg = 'Look! I am an Author page.';
+    });
+</script>
