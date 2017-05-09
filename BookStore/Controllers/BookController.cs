@@ -14,6 +14,14 @@ using BookStore.Repository;
 
 namespace BookStore.Controllers
 {
+
+//"N" - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (32 digits)
+//"D" - xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (32 digits separated by hyphens)
+//"B" - {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx} (same as "D" with addition of braces)
+//"P" - (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) (same as "D" with addition of parentheses)
+//"X" - {0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}}
+//Calling Guid.ToString("D") yields the same result as calling Guid.ToString().
+
     public class BookController : ApiController
     {
         private IBook bookRepository = null;
@@ -24,7 +32,7 @@ namespace BookStore.Controllers
 
 
        
-
+        [Route("book/list")]
         // GET api/Book
         public IHttpActionResult GetBooks()
         {
@@ -41,57 +49,79 @@ namespace BookStore.Controllers
             //check is author has records
             if (book == null)
                 message = "No Record Found";
-            return Ok(new { msg = message, list = book });
+            return Ok(new { message = message, list = book });
         }
 
+        [Route("book/getbook/{id}")]
         // GET api/Book/5
         [ResponseType(typeof(Book))]
         public IHttpActionResult GetBook(string id)
         {
-            
-            Book book = db.Books.Find(id);
-            if (book == null)
+            Book book=null;
+            string message = "ok";
+            try
             {
-                return NotFound();
+                book = bookRepository.FindBook(id);
+                //db.Books.Find(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
             }
-
-            return Ok(book);
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+            return Ok(new { list=book,message = message});
         }
 
+         [Route("book/Update/{id}")]
         // PUT api/Book/5
         public IHttpActionResult PutBook(string id, Book book)
         {
+            string message = "ok";
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                message = "Invalid model data.";
+               // return BadRequest(ModelState);
             }
 
             if (id != book.Id)
             {
-                return BadRequest();
+                message = "bad request!"; 
+                //return BadRequest();
             }
 
-            db.Entry(book).State = EntityState.Modified;
+
+            //db.Entry(book).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                Book update = bookRepository.Edit(book);
+               // db.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!BookExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                message = ex.Message;
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!BookExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+           // return StatusCode(HttpStatusCode.NoContent);
+            return Ok(new { id = book.Id, message = message });
         }
 
+
+
+        [Route("book/post")]
         // POST api/Book
         [ResponseType(typeof(Book))]
         public IHttpActionResult PostBook(Book book)
@@ -101,55 +131,73 @@ namespace BookStore.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Books.Add(book);
-
+            //db.Books.Add(book);
+            // db.SaveChanges();
+            string message = "ok";
+            book.Id = Guid.NewGuid().ToString("N");
+            book.CreatedDate = DateTime.Now;
+           // book.CreatedBy = User.Identity.Name;
             try
             {
-                db.SaveChanges();
+                Book save = bookRepository.Save(book);
             }
             catch (DbUpdateException)
             {
-                if (BookExists(book.Id))
+                if (bookRepository.FindBook(book.Id) !=null)  //BookExists(book.Id)
                 {
-                    return Conflict();
+                    message =book.ISBN + ' ' + book.Title + " already exists!";
+                    //return Conflict();
                 }
                 else
                 {
-                    throw;
+                    message = "Can not Save data due to Server Error.";
+                    //throw;
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = book.Id }, book);
+            return Ok(new { id = book.Id, message = message });
+          //  return CreatedAtRoute("DefaultApi", new { id = book.Id }, book);
         }
 
-        // DELETE api/Book/5
-        [ResponseType(typeof(Book))]
-        public IHttpActionResult DeleteBook(string id)
-        {
-            Book book = db.Books.Find(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            db.Books.Remove(book);
-            db.SaveChanges();
-
-            return Ok(book);
-        }
-
-        protected override void Dispose(bool disposing)
+       protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                IDisposable d =bookRepository as IDisposable;
+                if (d != null)
+                    d.Dispose();
+                //GC.SupressFinalize(this);
             }
             base.Dispose(disposing);
         }
+        // DELETE api/Book/5
+        //[ResponseType(typeof(Book))]
+        //public IHttpActionResult DeleteBook(string id)
+        //{
+        //    Book book = db.Books.Find(id);
+        //    if (book == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-        private bool BookExists(string id)
-        {
-            return db.Books.Count(e => e.Id == id) > 0;
-        }
+        //    db.Books.Remove(book);
+        //    db.SaveChanges();
+
+        //    return Ok(book);
+        //}
+
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
+
+        //private bool BookExists(string id)
+        //{
+        //    return db.Books.Count(e => e.Id == id) > 0;
+        //}
     }
 }

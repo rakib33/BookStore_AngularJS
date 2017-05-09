@@ -24,7 +24,7 @@ namespace BookStore.Controllers
         }
                
         
-       // private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
       
        
@@ -157,14 +157,7 @@ namespace BookStore.Controllers
             }
             base.Dispose(disposing);
         }
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        db.Dispose();
-        //    }
-        //    base.Dispose(disposing);
-        //}
+       
 
         #region BlockCode
         //// DELETE api/Author/5

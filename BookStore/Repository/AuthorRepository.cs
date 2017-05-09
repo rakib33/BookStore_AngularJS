@@ -71,8 +71,6 @@ namespace BookStore.Repository
             }
 
         }
-
-       
     }
 
     interface IAuthor

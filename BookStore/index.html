@@ -2,7 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Rakibul Book Store</title>
-    
+    <!--responsible to display only base url <base href="/">-->
+    <!--<base href="/">-->
     <!-- css for navigation layout-->  
     <link href="Content/font-awesome.css" rel="stylesheet" />
     <link href="Content/ionic.css" rel="stylesheet" />
@@ -20,8 +21,8 @@
 
 </head>
 <body class="skin-blue sidebar-mini">
-    
-   
+
+
     <div class="wrapper">
 
         <header class="main-header">
@@ -57,266 +58,30 @@
             </section>
         </aside>
 
-        <div class="content-wrapper">
-            <!--main content-->
-            <div class="container top-pad" style="padding-top:3% !important;margin-right:3% !important">
-                <div ng-app="bookStoreApp" data-ng-controller="AuthorController" class="container">
-                    <div ng-show="error" class="alert alert-danger alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <p>{{ error }}</p>
-                    </div>
+        <div class="content-wrapper" ng-app="bookStoreApp">
+            <!--main content-->          
+            <div class="container top-pad" style="padding-top:3% !important">  <!--ng-include="'Pages/Author.html'"-->
+                <!--Author page-->
+                <div ng-view>
 
-                    <!--<p><a data-ng-click="showadd()" href="javascript:;" class="btn btn-primary">Add New Author</a></p>-->
-
-                    <div class="modal fade" id="AuthorSaveModel" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                    <h4 class="modal-title" id="myModalLabel" ng-hide="editMode">Add Author</h4>
-                                    <h4 class="modal-title" id="myModalLabel" ng-show="editMode">Edit Author</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="form-horizontal" role="form" name="AddAuthorForm">
-
-                                        <div class="form-group">
-                                            <label for="title" class="col-sm-2 control-label">Initials</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" ng-readonly="editText" data-ng-model="author.Initials" class="form-control" id="title" placeholder="Your Initials" required title="Enter your Initials" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="title" class="col-sm-2 control-label">First Name</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" ng-readonly="editText" data-ng-model="author.FirstName" class="form-control" id="title" placeholder="Your First Name" required title="Enter your First name" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="title" class="col-sm-2 control-label">Last Name</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" ng-readonly="editText" data-ng-model="author.LastName" class="form-control" id="title" placeholder="Your Last Name" required title="Enter your Last name" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="title" class="col-sm-2 control-label">Address</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" ng-readonly="editText" data-ng-model="author.Address" class="form-control" id="title" placeholder="Your Address" required title="Enter your address" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="title" class="col-sm-2 control-label">Zip Code</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" ng-readonly="editText" data-ng-model="author.ZipCode" class="form-control" id="title" placeholder="Your Zip Code" required title="Enter Zip Code" />
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="title" class="col-sm-2 control-label">Country</label>
-                                            <div class="col-sm-10">
-                                                <input type="text" ng-readonly="editText" data-ng-model="author.Country" class="form-control" id="title" placeholder="Country Name" required title="Enter Country" />
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <div class="col-sm-offset-2 col-sm-10">
-                                                <span data-ng-hide="editMode">
-                                                    <input type="submit" value="Add" ng-disabled="AddAuthorForm.$invalid" data-ng-click="add()" class="btn btn-primary" />
-                                                    <input type="button" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />
-                                                </span>
-                                                <span data-ng-show="editMode">
-                                                    <label ng-click="first($index); editText=false;editorEnabled='false'" class="btn btn-info">Edit</label> <!--editText=false;editorEnabled='true'" -->
-                                                    <input type="submit" data-ng-hide="editText" value="Update" ng-disabled="AddAuthorForm.$invalid" data-ng-click="update()" class="btn btn-primary" />
-                                                    <input type="button" data-ng-hide="editText" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />
-                                                </span>
-                                                <!--<input type="button" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />-->
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!--<h5>Author List</h5>-->
-
-                    <div class="container">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="text-center">Author List</h4>
-                            </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <form class="form-inline">
-                                            <div class="form-group">
-                                                <label>Search</label>
-                                                <input type="text" ng-model="search" class="form-control" placeholder="Search">
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    <div class="col-md-6 text-right">
-                                        <div class="pull-right">
-                                            <a data-ng-click="showadd()" href="javascript:;" class="btn btn-primary"><span class="glyphicon glyphicon-plus"> Add Author</span></a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <br />
-                                <table class="table table-hover">
-                                    <tr>
-                                        <th>First Name</th>
-                                        <td>Last Name</td>
-                                        <th>Initials</th>
-                                        <th>Address</th>
-                                        <th>Zip Code</th>
-                                        <th>Country</th>
-                                        <!--<th></th>-->
-                                    </tr>
-                                    <tr dir-paginate="author in authors|orderBy:FirstName|filter:search|itemsPerPage:2" ng-dblclick="get(author)">
-                                        <!--<tr data-ng-repeat="author in authors" ng-dblclick="get(author)">-->
-                                        <td>
-                                            <p>{{ author.FirstName }}</p>
-
-                                        </td>
-                                        <td>
-                                            <p>{{ author.LastName }}</p>
-
-                                        </td>
-                                        <td>
-                                            <p>{{ author.Initials }}</p>
-
-                                        </td>
-                                        <td>
-                                            <p>{{ author.Address }}</p>
-
-                                        </td>
-                                        <td>
-                                            <p>{{ author.ZipCode }}</p>
-                                        </td>
-                                        <td>
-                                            <p>{{ author.Country }}</p>
-                                        </td>
-                                        <!--<td>
-                                        <p>
-                                            <a data-ng-click="get(author)" href="javascript:;">View</a> |
-                                            <a data-ng-click="edit(author)" href="javascript:;">Edit</a> |
-                                            <a data-ng-click="showconfirm(author)" href="javascript:;">Delete</a>
-                                        </p>
-                                    </td>-->
-
-                                    </tr>
-                                </table>
-                                <div class="pull-right">
-                                    <!--this is for pagination-->
-                                    <dir-pagination-controls max-size="2" direction-links="true" boundary-links="true"></dir-pagination-controls>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-
-
-
-                    <div class="modal fade" id="AuthorViewModal" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                    <h4 class="modal-title" id="myModalLabel">View User</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="form-horizontal" role="form" name="viewuser">
-
-                                        <div class="form-group">
-                                            <label for="ContactNo" class="col-sm-2 control-label">Initials</label>
-                                            <div class="col-sm-10">
-                                                {{author.Initials}}
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="Name" class="col-sm-2 control-label">First Name</label>
-                                            <div class="col-sm-10">
-                                                {{author.FirstName}}
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="ContactNo" class="col-sm-2 control-label">Last Name</label>
-                                            <div class="col-sm-10">
-                                                {{author.LastName}}
-                                            </div>
-                                        </div>
-
-
-                                        <div class="form-group">
-                                            <label for="Address" class="col-sm-2 control-label">Zip Code</label>
-                                            <div class="col-sm-10">
-                                                {{author.ZipCode}}
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="Address" class="col-sm-2 control-label">Address</label>
-                                            <div class="col-sm-10">
-                                                {{author.Address}}
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="Address" class="col-sm-2 control-label">Country</label>
-                                            <div class="col-sm-10">
-                                                {{author.Country}}
-                                            </div>
-                                        </div>
-
-                                    </form>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <a data-ng-click="edit(author)" href="javascript:;">Edit</a>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                    <h4 class="modal-title" id="myModalLabel">Confirm Action</h4>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure to delete?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-ng-click="delete()">Ok</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
             </div>
-        
         </div>
 
-        </div>
+    </div>
 
 
 
-        <!-- Javascript for navigation layout-->
-        <script src="jsScript/layout/jquery-ui.js"></script>
-        <script src="jsScript/layout/app.min.js"></script>
-        <!--close for navigation layout-->
-        <!--Base js file for pagination-->
-        <script src="jsScript/dirPagination.js"></script>
-        <script src="jsScript/myAngular.js"></script>
-
+    <!-- Javascript for navigation layout-->
+    <script src="jsScript/layout/jquery-ui.js"></script>
+    <script src="jsScript/layout/app.min.js"></script>
+    <!--close for navigation layout-->
+    <!--Base js file for pagination-->
+    <script src="jsScript/dirPagination.js"></script>
+    <script src="jsScript/myAngular.js"></script>
+    <script src="jsScript/angular-route.js"></script>
+    <script src="jsScript/ng-file-upload-all.js"></script>
+    
 </body>
 </html>

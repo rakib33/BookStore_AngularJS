@@ -1,4 +1,240 @@
-﻿<div class="text-center">
-    <h1>Book Page</h1>
-    <p>{{ message }}</p>
+﻿<div data-ng-controller="BookController" class="container">
+    <!--ng-app="bookStoreApp"-->
+    <div ng-show="error" class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <p>{{ error }}</p>
+    </div>
+
+ 
+
+    <div class="modal fade" id="BookSaveModel" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content modal-content-book">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 class="modal-title" id="myModalLabel" ng-hide="editMode">Add Book</h4>
+                    <h4 class="modal-title" id="myModalLabel" ng-show="editMode">Edit Book</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" name="AddBookForm">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <img ng-show="isImage" ngf-src="picFile[0]" class="thumb">
+                                </div>
+                                <div class="row">                                
+                                    <input type="file" id="file" class="input-text" ngf-change="onChange($files)" ngf-select data-ng-model="picFile" required name="attachement" accept="image/png, image/jpeg, image/jpg,image/JPG, application/msword, application/vnd.ms-excel, application/pdf " />
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+
+                                <div class="form-group">
+                                    <label for="Title" class="col-sm-4 control-label">Title</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" ng-readonly="editText" data-ng-model="book.Title" class="form-control" id="Title" placeholder="Book Title" required />  <!--title="Enter Book Title"-->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ISBN" class="col-sm-4 control-label">ISBN</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" ng-readonly="editText" data-ng-model="book.ISBN" class="form-control" id="ISBN" placeholder="Your First Name" required />  <!--title="Enter your First name"-->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="PublishingDate" class="col-sm-4 control-label">Publishing Date</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" ng-readonly="editText" data-ng-model="book.PublishingDate" class="form-control" id="PublishingDate" placeholder="Book Publishing Date" required />  <!--title="Enter your Last name"-->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Price" class="col-sm-4 control-label">Price</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" ng-readonly="editText" data-ng-model="book.Price" class="form-control" id="Price" placeholder="Your Price" />   <!--required title="Enter your address"-->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="PublishingHouse" class="col-sm-4 control-label">Publishing House</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" ng-readonly="editText" data-ng-model="book.PublishingHouse" class="form-control" id="PublishingHouse" placeholder="Your Zip Code" required title="Enter Zip Code" />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-6 col-sm-6">
+                                <span data-ng-hide="editMode">
+                                    <input type="submit" value="Add" ng-disabled="AddBookForm.$invalid" data-ng-click="add()" class="btn btn-primary" />
+                                    <input type="button" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />
+                                </span>
+                                <span data-ng-show="editMode">
+                                    <label ng-click="first($index); editText=false;editorEnabled='false'" class="btn btn-info">Edit</label> <!--editText=false;editorEnabled='true'" -->
+                                    <input type="submit" data-ng-hide="editText" value="Update" ng-disabled="AddBookForm.$invalid" data-ng-click="update()" class="btn btn-primary" />
+                                    <input type="button" data-ng-hide="editText" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />
+                                </span>
+                                <!--<input type="button" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />-->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<h5>book List</h5>-->
+
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="text-center">book List</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label>Search</label>
+                                <input type="text" ng-model="search" class="form-control" placeholder="Search">
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-md-6 text-right">
+                        <div class="pull-right">
+                            <a data-ng-click="showadd()" href="javascript:;" class="btn btn-primary"><span class="glyphicon glyphicon-plus"> Add book</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+                <table class="table table-hover">
+                    <tr>
+                        <th>Title</th>
+                        <td>ISBN</td>
+                        <th>Publishing Date</th>
+                        <th>Price</th>
+                        <th>PublishingHouse</th>
+                        <!--<th></th>-->
+                    </tr>
+                    <tr dir-paginate="book in books|orderBy:Title|filter:search|itemsPerPage:2" ng-dblclick="get(book)">
+                        <!--<tr data-ng-repeat="book in books" ng-dblclick="get(book)">-->
+                        <td>
+                            <p>{{ book.Title }}</p>
+
+                        </td>
+                        <td>
+                            <p>{{ book.ISBN }}</p>
+
+                        </td>
+                        <td>
+                            <p>{{ book.PublishingDate }}</p>
+
+                        </td>
+                        <td>
+                            <p>{{ book.Price }}</p>
+
+                        </td>
+                        <td>
+                            <p>{{ book.PublishingHouse }}</p>
+                        </td>
+                       
+                        <!--<td>
+                            <p>
+                                <a data-ng-click="get(book)" href="javascript:;">View</a> |
+                                <a data-ng-click="edit(book)" href="javascript:;">Edit</a> |
+                                <a data-ng-click="showconfirm(book)" href="javascript:;">Delete</a>
+                            </p>
+                        </td>-->
+
+                    </tr>
+                </table>
+                <div class="pull-right">
+                    <!--this is for pagination-->
+                    <dir-pagination-controls max-size="2" direction-links="true" boundary-links="true"></dir-pagination-controls>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="bookViewModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 class="modal-title" id="myModalLabel">View Book</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" name="viewuser">
+
+                        <div class="form-group">
+                            <label for="Title" class="col-sm-4 control-label">Title</label>
+                            <div class="col-sm-8">
+                                {{book.Title}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ISBN" class="col-sm-4 control-label">ISBN</label>
+                            <div class="col-sm-8">
+                                {{book.ISBN}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="PublishingDate" class="col-sm-4 control-label">Publishing Date</label>
+                            <div class="col-sm-8">
+                                {{book.PublishingDate}}
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="Price" class="col-sm-4 control-label">Price</label>
+                            <div class="col-sm-8">
+                                {{book.Price}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="PublishingHouse" class="col-sm-4 control-label">Publishing House</label>
+                            <div class="col-sm-8">
+                                {{book.PublishingHouse}}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <a data-ng-click="edit(book)" href="javascript:;">Edit</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm Action</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure to delete?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-ng-click="delete()">Ok</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+

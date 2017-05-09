@@ -1,4 +1,19 @@
-﻿  #mydiv {
+﻿/*body .modal {
+    /* new custom width 
+    width: 800px;
+    margin:auto;
+    /* must be half of the width, minu margin-left: -280px;
+}*/
+
+.modal-content-book {
+    width:800px !important;
+}
+.thumb {
+  width:90%;
+  height:200px;
+  background: url("image/images.png") center no-repeat;  
+}
+#mydiv {
         position:absolute;
         top:0;
         left:0;
