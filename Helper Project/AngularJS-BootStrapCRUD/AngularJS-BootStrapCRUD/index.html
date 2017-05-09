@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>AngularJS & Bootstrap CRUD Operations</title>
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link href="css/bootstrap-theme.css" rel="stylesheet" />
+    <script src="lib/angular.js"></script>
+    <script src="lib/jquery-1.11.1.js"></script>
+    <script src="lib/bootstrap.js"></script>
+</head>
+<body>
+    <div class="container" style="padding-top:20px;">
+        <div ng-app="userApp" data-ng-controller="userController" class="container">
+            <div ng-show="error"  class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <p>{{ error }}</p>
+            </div>
+
+            <p><a data-ng-click="showadd()" href="javascript:;" class="btn btn-primary">Add New User</a></p>
+
+            <div class="modal fade" id="userModel" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 class="modal-title" id="myModalLabel" ng-hide="editMode">Add User</h4>
+                            <h4 class="modal-title" id="myModalLabel" ng-show="editMode">Edit User</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" name="adduserform">
+                                <div class="form-group">
+                                    <label for="title" class="col-sm-2 control-label">Name</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" data-ng-model="user.Name" class="form-control" id="title" placeholder="Your Name" required title="Enter your name" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="title" class="col-sm-2 control-label">Address</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" data-ng-model="user.Address" class="form-control" id="title" placeholder="Your Address" required title="Enter your address" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="title" class="col-sm-2 control-label">ContactNo</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" data-ng-model="user.ContactNo" class="form-control" id="title" placeholder="Your ContactNo" required title="Enter your contactno" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <span data-ng-hide="editMode">
+                                            <input type="submit" value="Add" ng-disabled="adduserform.$invalid" data-ng-click="add()" class="btn btn-primary" />
+                                        </span>
+                                        <span data-ng-show="editMode">
+                                            <input type="submit" value="Update" ng-disabled="adduserform.$invalid" data-ng-click="update()" class="btn btn-primary" />
+                                        </span>
+                                        <input type="button" value="Cancel" data-ng-click="cancel()" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h1>Users List</h1>
+            <table class="table table-hover">
+                <tr>
+                    <th>User ID</th>
+                    <td>Name</td>
+                    <th>Address</th>
+                    <th>Contact No</th>
+                    <th></th>
+                </tr>
+
+                <tr data-ng-repeat="user in users">
+                    <td><strong>{{ user.UserId }}</strong></td>
+                    <td>
+                        <p>{{ user.Name }}</p>
+
+                    </td>
+                    <td>
+                        <p>{{ user.Address }}</p>
+
+                    </td>
+                    <td>
+                        <p>{{ user.ContactNo }}</p>
+
+                    </td>
+                    <td>
+                        <p>
+                            <a data-ng-click="get(user)" href="javascript:;">View</a> |
+                            <a data-ng-click="edit(user)" href="javascript:;">Edit</a> |
+                            <a data-ng-click="showconfirm(user)" href="javascript:;">Delete</a>
+                        </p>
+
+                    </td>
+                </tr>
+            </table>
+            <hr />
+
+            <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 class="modal-title" id="myModalLabel">View User</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" name="viewuser">
+                                <div class="form-group">
+                                    <label for="Name" class="col-sm-2 control-label">Name</label>
+                                    <div class="col-sm-10">
+                                        {{user.Name}}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Address" class="col-sm-2 control-label">Address</label>
+                                    <div class="col-sm-10">
+                                        {{user.Address}}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ContactNo" class="col-sm-2 control-label">ContactNo</label>
+                                    <div class="col-sm-10">
+                                        {{user.ContactNo}}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 class="modal-title" id="myModalLabel">Confirm Action</h4>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure to delete?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-ng-click="delete()">Ok</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        var app = angular.module('userApp', []);
+        var baseAddress = 'http://localhost:49595/MobileService/api/UserService/';
+        var url = "";
+
+        app.factory('userFactory', function ($http) {
+            return {
+                getUsersList: function () {
+                    url = baseAddress + "GetUsersList";
+                    return $http.get(url);
+                },
+                getUser: function (user) {
+                    url = baseAddress + "GetUser/" + user.UserId;
+                    return $http.get(url);
+                },
+                addUser: function (user) {
+                    url = baseAddress + "AddUser";
+                    return $http.post(url, user);
+                },
+                deleteUser: function (user) {
+                    url = baseAddress + "DeleteUser/" + user.UserId;
+                    return $http.delete(url);
+                },
+                updateUser: function (user) {
+                    url = baseAddress + "ModifyUser/" + user.UserId;
+                    return $http.put(url, user);
+                }
+            };
+        });
+
+        app.controller('userController', function PostController($scope, userFactory) {
+            $scope.users = [];
+            $scope.user = null;
+            $scope.editMode = false;
+
+            //get User
+            $scope.get = function () {
+                $scope.user = this.user;
+                $('#viewModal').modal('show');
+            };
+
+            //get all Users
+            $scope.getAll = function () {
+                userFactory.getUsersList().success(function (data) {
+                    $scope.users = data;
+                }).error(function (data) {
+                    $scope.error = "An Error has occured while Loading users! " + data.ExceptionMessage;
+                });
+            };
+
+            // add User
+            $scope.add = function () {
+                var currentUser = this.user;
+                if (currentUser != null && currentUser.Name != null && currentUser.Address && currentUser.ContactNo) {
+                    userFactory.addUser(currentUser).success(function (data) {
+                        $scope.addMode = false;
+                        currentUser.UserId = data;
+                        $scope.users.push(currentUser);
+
+                        //reset form
+                        $scope.user = null;
+                        // $scope.adduserform.$setPristine(); //for form reset
+
+                        $('#userModel').modal('hide');
+                    }).error(function (data) {
+                        $scope.error = "An Error has occured while Adding user! " + data.ExceptionMessage;
+                    });
+                }
+            };
+
+            //edit user
+            $scope.edit = function () {
+                $scope.user = this.user;
+                $scope.editMode = true;
+                $('#userModel').modal('show');
+            };
+
+            //update user
+            $scope.update = function () {
+                var currentUser = this.user;
+                userFactory.updateUser(currentUser).success(function (data) {
+                    currentUser.editMode = false;
+
+                    $('#userModel').modal('hide');
+                }).error(function (data) {
+                    $scope.error = "An Error has occured while Updating user! " + data.ExceptionMessage;
+                });
+            };
+
+            // delete User
+            $scope.delete = function () {
+                currentUser = $scope.user;
+                userFactory.deleteUser(currentUser).success(function (data) {
+                    $('#confirmModal').modal('hide');
+                    $scope.users.pop(currentUser);
+
+                }).error(function (data) {
+                    $scope.error = "An Error has occured while Deleting user! " + data.ExceptionMessage;
+
+                    $('#confirmModal').modal('hide');
+                });
+            };
+
+            //Model popup events
+            $scope.showadd = function () {
+                $scope.user = null;
+                $scope.editMode = false;
+                $('#userModel').modal('show');
+            };
+
+            $scope.showedit = function () {
+                $('#userModel').modal('show');
+            };
+
+            $scope.showconfirm = function (data) {
+                $scope.user = data;
+                $('#confirmModal').modal('show');
+            };
+
+            $scope.cancel = function () {
+                $scope.user = null;
+                $('#userModel').modal('hide');
+            }
+
+            // initialize your users data
+            $scope.getAll();
+
+        });
+    </script>
+</body>
+</html>
